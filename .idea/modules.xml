@@ -2,13 +2,14 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/Vitamio/Vitamio.iml" filepath="$PROJECT_DIR$/Vitamio/Vitamio.iml" />
-      <module fileurl="file://$PROJECT_DIR$/ZhVideoPlayer-master.iml" filepath="$PROJECT_DIR$/ZhVideoPlayer-master.iml" />
+      <module fileurl="file://$PROJECT_DIR$/SmbVideo.iml" filepath="$PROJECT_DIR$/SmbVideo.iml" />
+      <module fileurl="file://D:\javaWorkspace\SmbVideo\Vitamio\Vitamio.iml" filepath="D:\javaWorkspace\SmbVideo\Vitamio\Vitamio.iml" />
+      <module fileurl="file://D:\javaWorkspace\SmbVideo\ZhVideoPlayer-master.iml" filepath="D:\javaWorkspace\SmbVideo\ZhVideoPlayer-master.iml" />
       <module fileurl="file://$PROJECT_DIR$/app/app.iml" filepath="$PROJECT_DIR$/app/app.iml" />
       <module fileurl="file://$PROJECT_DIR$/jcvideoplayer-lib/jcvideoplayer-lib.iml" filepath="$PROJECT_DIR$/jcvideoplayer-lib/jcvideoplayer-lib.iml" />
       <module fileurl="file://$PROJECT_DIR$/pullToRefresh_library/pullToRefresh_library.iml" filepath="$PROJECT_DIR$/pullToRefresh_library/pullToRefresh_library.iml" />
-      <module fileurl="file://$PROJECT_DIR$/vitamio_lib/vitamio_lib.iml" filepath="$PROJECT_DIR$/vitamio_lib/vitamio_lib.iml" />
       <module fileurl="file://D:\javaWorkspace\ZhVideoPlayer-master\vitamio_lib\vitamio_lib.iml" filepath="D:\javaWorkspace\ZhVideoPlayer-master\vitamio_lib\vitamio_lib.iml" />
+      <module fileurl="file://D:\javaWorkspace\SmbVideo\vitamio_lib\vitamio_lib.iml" filepath="D:\javaWorkspace\SmbVideo\vitamio_lib\vitamio_lib.iml" />
     </modules>
   </component>
 </project>

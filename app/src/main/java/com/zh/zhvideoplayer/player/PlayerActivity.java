@@ -39,7 +39,6 @@ import com.zh.zhvideoplayer.util.Preference;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 
-import io.vov.vitamio.Vitamio;
 
 
 /**
@@ -77,8 +76,6 @@ public class PlayerActivity extends AppCompatActivity implements OnClickListener
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		Vitamio.isInitialized(getApplicationContext());
-		Vitamio.isInitialized(PlayerActivity.this);
 		mContentView = View.inflate(this, R.layout.player_activity_play, null);
 		setContentView(mContentView);
 		initTitle();

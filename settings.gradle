@@ -1,2 +1,2 @@
-include ':app', ':vitamio_lib', ':Vitamio', ':jcvideoplayer-lib'
+include ':app',  ':jcvideoplayer-lib'
 include ':pullToRefresh_library'

@@ -195,7 +195,7 @@ public class LocalVideoListAdapter extends BaseAdapter {
 
                     @Override
                     protected void error(BaseDownloadTask task, Throwable e) {
-
+						Toast.makeText(mContext,e.getMessage(),Toast.LENGTH_SHORT).show();
                     }
 
                     @Override
