@@ -1,0 +1,36 @@
+{
+    "logs": [
+        {
+            "outputFile": "D:\\javaWorkspace\\ZhVideoPlayer-master\\pullToRefresh_library\\build\\intermediates\\incremental\\mergeDebugAndroidTestResources\\merged.dir\\values-ja\\values-ja.xml",
+            "map": [
+                {
+                    "source": "D:\\javaWorkspace\\ZhVideoPlayer-master\\pullToRefresh_library\\build\\intermediates\\bundles\\debug\\res\\values-ja\\values-ja.xml",
+                    "from": {
+                        "startLines": "2,3,4",
+                        "startColumns": "4,4,4",
+                        "startOffsets": "55,120,188",
+                        "endColumns": "64,67,66",
+                        "endOffsets": "115,183,250"
+                    }
+                },
+                {
+                    "source": "C:\\Users\\Adolf Li\\.gradle\\caches\\transforms-1\\files-1.1\\support-compat-27.0.2.aar\\94609a4a3ca4fd2104af42ab2324109e\\res\\values-ja\\values-ja.xml",
+                    "from": {
+                        "startLines": "2",
+                        "startColumns": "4",
+                        "startOffsets": "55",
+                        "endColumns": "100",
+                        "endOffsets": "151"
+                    },
+                    "to": {
+                        "startLines": "5",
+                        "startColumns": "4",
+                        "startOffsets": "255",
+                        "endColumns": "100",
+                        "endOffsets": "351"
+                    }
+                }
+            ]
+        }
+    ]
+}

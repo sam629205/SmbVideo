@@ -1,0 +1,36 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content" android:orientation="vertical"
+    >
+
+    <ImageView
+        android:id="@+id/image"
+        android:layout_width="match_parent"
+        android:layout_height="200dp"
+        android:paddingLeft="3dp"
+        android:paddingTop="3dp"
+        android:paddingBottom="3dp"
+        android:scaleType="fitCenter" />
+
+    <TextView
+        android:id="@+id/title"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:padding="10dp"
+        android:text="名称"
+        android:lines="1"
+        android:textSize="14sp"/>
+    <TextView
+        android:id="@+id/tv_factory" android:layout_width="wrap_content" android:text="厂商" android:layout_toRightOf="@id/image"
+        android:layout_height="wrap_content" android:layout_below="@+id/title" android:visibility="gone"/>
+    <TextView
+        android:id="@+id/tv_series" android:layout_width="wrap_content" android:text="系列" android:layout_toRightOf="@+id/tv_factory"
+        android:layout_height="wrap_content" android:layout_below="@+id/title" android:visibility="gone"/>
+    <HorizontalScrollView
+        android:id="@+id/sv_stars" android:layout_width="300dp" android:layout_below="@id/image"
+        android:layout_height="wrap_content" android:visibility="gone"/>
+    <Button
+        android:id="@+id/btn_download" android:layout_width="wrap_content" android:text="下载" android:background="#00ffffff"
+        android:layout_height="wrap_content" android:layout_toRightOf="@+id/sv_stars" android:layout_below="@id/tv_series" android:visibility="gone"/>
+</LinearLayout>

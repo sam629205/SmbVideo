@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- StateView 使用 -->
+    <declare-styleable name="StateView">
+        <attr name="state_content" format="reference"/>
+        <attr name="state_error" format="reference"/>
+        <attr name="state_empty" format="reference"/>
+        <attr name="state_loading" format="reference"/>
+        <attr name="state_current" format="enum">
+            <enum name="content" value="0"/>
+            <enum name="loading" value="1"/>
+            <enum name="error" value="2"/>
+            <enum name="empty" value="3"/>
+            <enum name="content_loading" value="4"/>
+        </attr>
+    </declare-styleable>
+    <declare-styleable name="CircleProgressView">
+        <attr name="progressNormalColor"/>
+        <attr name="progressReachColor"/>
+        <attr name="progressTextColor"/>
+        <attr name="progressTextSize"/>
+        <attr name="progressTextOffset"/>
+        <attr name="progressNormalSize"/>
+        <attr name="progressReachSize"/>
+        <attr format="dimension" name="radius"/>
+        <attr name="progressTextVisible"/>
+        <attr format="integer" name="progressStartArc"/>
+        <attr name="progressTextSkewX"/>
+        <attr name="progressTextPrefix"/>
+        <attr name="progressTextSuffix"/>
+        <attr name="innerBackgroundColor"/>
+        <attr format="enum" name="progressStyle">
+            <enum name="Normal" value="0"/>
+            <enum name="FillInner" value="1"/>
+            <enum name="FillInnerArc" value="2"/>
+        </attr>
+        <attr format="color" name="innerProgressColor"/>
+        <attr format="dimension" name="innerPadding"/>
+        <attr format="color" name="outerColor"/>
+        <attr format="dimension" name="outerSize"/>
+        <attr format="boolean" name="reachCapRound"/>
+    </declare-styleable>
+    <attr format="dimension" name="progressTextSize"/>
+    <attr format="color" name="progressTextColor"/>
+    <attr format="dimension" name="progressTextOffset"/>
+    <attr format="color" name="progressNormalColor"/>
+    <attr format="color" name="progressReachColor"/>
+    <attr format="dimension" name="progressNormalSize"/>
+    <attr format="dimension" name="progressReachSize"/>
+    <attr format="dimension" name="progressReachWidth"/>
+    <attr format="dimension" name="progressNormalWidth"/>
+    <attr format="boolean" name="progressTextVisible"/>
+    <attr format="dimension" name="progressTextSkewX"/>
+    <attr format="string" name="progressTextPrefix"/>
+    <attr format="string" name="progressTextSuffix"/>
+    <attr format="color" name="innerBackgroundColor"/>
+</resources>
