@@ -1,10 +1,10 @@
 {
     "logs": [
         {
-            "outputFile": "D:\\javaWorkspace\\ZhVideoPlayer-master\\pullToRefresh_library\\build\\intermediates\\incremental\\mergeDebugAndroidTestResources\\merged.dir\\values-fr\\values-fr.xml",
+            "outputFile": "D:\\javaWorkspace\\SmbVideo\\SmbVideo\\pullToRefresh_library\\build\\intermediates\\incremental\\mergeDebugAndroidTestResources\\merged.dir\\values-fr\\values-fr.xml",
             "map": [
                 {
-                    "source": "D:\\javaWorkspace\\ZhVideoPlayer-master\\pullToRefresh_library\\build\\intermediates\\bundles\\debug\\res\\values-fr\\values-fr.xml",
+                    "source": "D:\\javaWorkspace\\SmbVideo\\SmbVideo\\pullToRefresh_library\\build\\intermediates\\bundles\\debug\\res\\values-fr\\values-fr.xml",
                     "from": {
                         "startLines": "2,3,4",
                         "startColumns": "4,4,4",

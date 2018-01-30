@@ -86,6 +86,7 @@ public class SettingsActivity extends AppCompatActivity{
                 Realm mRealm=MyApplication.getInstance().getRealm();
                 SmbModel info = new SmbModel();
                 info.setUrl(etSmbUrl.getText().toString());
+                info.setActive("1");
                 ((SmbUrlAdapter)lvSmb.getAdapter()).add(info);
                 mRealm.beginTransaction();
                 mRealm.insertOrUpdate(info);

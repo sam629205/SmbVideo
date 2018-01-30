@@ -17,16 +17,10 @@ import android.view.View.OnClickListener;
 import android.view.WindowManager;
 import android.webkit.WebView;
 import android.widget.ImageView;
-import android.widget.LinearLayout.LayoutParams;
+import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.SeekBar;
 
-import com.devbrackets.android.exomedia.listener.OnBufferUpdateListener;
-import com.devbrackets.android.exomedia.listener.OnCompletionListener;
-import com.devbrackets.android.exomedia.listener.OnErrorListener;
-import com.devbrackets.android.exomedia.listener.OnPreparedListener;
-import com.devbrackets.android.exomedia.listener.OnSeekCompletionListener;
-import com.devbrackets.android.exomedia.ui.widget.VideoView;
 import com.zh.zhvideoplayer.R;
 import com.zh.zhvideoplayer.bean.LocalVideoBean;
 import com.zh.zhvideoplayer.bean.Resources;
@@ -35,24 +29,26 @@ import com.zh.zhvideoplayer.util.Constant;
 import com.zh.zhvideoplayer.util.FileItem;
 import com.zh.zhvideoplayer.util.FileUtil;
 import com.zh.zhvideoplayer.util.Preference;
+import com.zh.zhvideoplayer.view.MyGSYPlayer;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 
+import tv.danmaku.ijk.media.player.IMediaPlayer;
 
 
 /**
  * 视频播放界面
  */
-public class PlayerActivity extends AppCompatActivity implements OnClickListener, OnCompletionListener,
-		OnPreparedListener, OnErrorListener,OnSeekCompletionListener,OnBufferUpdateListener,MyMediaController.SetVideoURLListener {
+public class PlayerActivity extends AppCompatActivity implements OnClickListener,IMediaPlayer.OnCompletionListener,
+		IMediaPlayer.OnPreparedListener, IMediaPlayer.OnErrorListener,IMediaPlayer.OnSeekCompleteListener,IMediaPlayer.OnBufferingUpdateListener,MyMediaController.SetVideoURLListener {
 	private MyMediaController mMediaController;
 	private View mContentView;
 	
 	private View mTitleLayout;//顶部标题栏布局
 	private View mRl_PlayView;//播放器所在布局
 	private View mLoadingView;// 加载中的进度条
-	private VideoView mVideoView;// vitmio视频播放控件
+	private MyGSYPlayer mVideoView;// vitmio视频播放控件
 	private RelativeLayout mTopTools;// 播放器顶部工具栏
 	private ImageView mLockScreenSwitch;// 锁定或解锁屏幕控件
 	private ImageView mOrientationSwitch;// 全屏或非全屏开关
@@ -82,7 +78,6 @@ public class PlayerActivity extends AppCompatActivity implements OnClickListener
 		initViews();
 		initDatas();
 		invalidateOptionsMenu();
-		mMediaController.getPlayerCenterPlaySwitch().setVisibility(View.VISIBLE);
 		mLoadingView.setVisibility(View.GONE);
 
 	}
@@ -99,7 +94,7 @@ public class PlayerActivity extends AppCompatActivity implements OnClickListener
 		wv = (WebView) findViewById(R.id.wv);
 		mMediaController = (MyMediaController) findViewById(R.id.MyMediaController);
 		mTitleLayout =  findViewById(R.id.titlebar);
-		mVideoView = (VideoView) findViewById(R.id.vitamio_videoview);
+		mVideoView = (MyGSYPlayer) findViewById(R.id.vitamio_videoview);
 		mLoadingView = findViewById(R.id.video_loading);
 		mRl_PlayView = findViewById(R.id.id_ViewLayout);
 		forwardSeekIv = (ImageView) findViewById(R.id.forward_seek_btn);
@@ -107,11 +102,7 @@ public class PlayerActivity extends AppCompatActivity implements OnClickListener
 		mLockScreenSwitch = (ImageView)findViewById(R.id.player_iv_lock_screen);
 		mOrientationSwitch = (ImageView)findViewById(R.id.orientation_switch);
 		mPlayerSeekbar = (SeekBar)findViewById(R.id.player_seekbar);
-		mVideoView.setOnCompletionListener(this);
-		mVideoView.setOnPreparedListener(this);
-		mVideoView.setOnErrorListener(this);
-		mVideoView.setOnBufferUpdateListener(this);
-		mVideoView.setOnSeekCompletionListener(this);
+
 	}
 
 	private void initDatas() {
@@ -129,14 +120,41 @@ public class PlayerActivity extends AppCompatActivity implements OnClickListener
 			mVideoRes.setTitle(video.title);
 			mVideoRes.setDescription("");
 			mVideoRes.setLink(video.path);
-			Log.d("zh","video.title:" + video.title);
-			Log.d("zh","video.title:" + video.path);
 		}
-		
-		ResetVideoPlayer();
-		loadDetailWeb();
+        ResetVideoPlayer();
+        loadDetailWeb();
 		mMediaController.setSetVideoURLListener(this);
 	}
+    private void ResetVideoPlayer(){
+        // 设置显示名称
+        mMediaController.initControllerTools(this, mContentView, mVideoView,this);
+        mMediaController.setMediaPlayer(mVideoView);
+        mMediaController.setFileName(mVideoRes.getVideoTitle());
+
+        int mCurrentOrientation = getResources().getConfiguration().orientation;
+        if (mCurrentOrientation == Configuration.ORIENTATION_PORTRAIT) {
+            SetfullScreen(PlayerActivity.this, false);
+            mMediaController.isLockedTools = false;
+
+            mTitleLayout.setVisibility(View.VISIBLE);
+            mTopTools.setVisibility(View.GONE);
+            mLockScreenSwitch.setVisibility(View.GONE);
+            mOrientationSwitch.setImageResource(R.mipmap.player_fill);
+            mRl_PlayView.setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, dp2px(PlayerActivity.this, 200)));
+            if (mVideoView != null && mIsPrepared){
+            }
+        } else if (mCurrentOrientation == Configuration.ORIENTATION_LANDSCAPE) {
+            SetfullScreen(PlayerActivity.this,true);
+            mTitleLayout.setVisibility(View.GONE);
+            mTopTools.setVisibility(View.VISIBLE);
+            mLockScreenSwitch.setVisibility(View.VISIBLE);
+            mOrientationSwitch.setImageResource(R.mipmap.player_btn_scale);
+            mRl_PlayView.setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.MATCH_PARENT));
+            if (mVideoView != null && mIsPrepared){
+            }
+        }
+        mVideoView.requestFocus();
+    }
 	private void loadDetailWeb(){
 		String videoLink = mVideoRes.getLink();
 		String[] strs = videoLink.split("/");
@@ -152,30 +170,30 @@ public class PlayerActivity extends AppCompatActivity implements OnClickListener
 	}
 	@Override
 	public void setVideoURI() {
-		if(mVideoRes.getLink().indexOf("smb")!=-1){
-			FileItem item = new FileItem("",mVideoRes.getLink(),true);
-			playSmbVideo(item);
-		}else {
-			mVideoView.setVideoURI(Uri.parse(mVideoRes.getLink()));
-		}
-		mVideoView.start();
+		playVideo();
 		mMediaController.getPlayerCenterPlaySwitch().setVisibility(View.GONE);
-		mLoadingView.setVisibility(View.VISIBLE);
 	}
+	private void playVideo(){
+        if(mVideoRes.getLink().indexOf("smb")!=-1){
+            FileItem item = new FileItem("",mVideoRes.getLink(),true);
+            playSmbVideo(item);
+        }else {
+            String name = mVideoRes.getLink().split("/")[mVideoRes.getLink().split("/").length-1];
+            mVideoView.setUp(mVideoRes.getLink(),false,name);
+        }
+        mVideoView.startPlayLogic();
+    }
 
 
 
 	private void playSmbVideo(FileItem item){
 		String mPath = item.getPath();
-		String[] strs = mPath.split("@");
-		item.setPath("smb://"+SMB_ACCOUNT_PWD+"@"+strs[1]);
 		if (item.isFile())
 		{
 			String ipVal = FileUtil.ip;
 			int portVal = FileUtil.port;
 			String path = item.getPath();
-			String httpReq = "http://" + ipVal + ":" + portVal + "/smb=";
-			Log.e("", "" + FileUtil.ip + ":" + FileUtil.port + " " + path);
+			String httpReq = "http://" + ipVal + ":" + portVal + mPath;
 			if (path.endsWith(".mp3"))
 			{
 				path = path.substring(6);
@@ -210,10 +228,9 @@ public class PlayerActivity extends AppCompatActivity implements OnClickListener
 					e.printStackTrace();
 				}
 
-				String url = httpReq + path;
-				Log.e("", "url: "+url);
-				Uri uri = Uri.parse(url);
-				mVideoView.setVideoURI(uri);
+				String url = httpReq;
+				String name = mVideoRes.getLink().split("/")[mVideoRes.getLink().split("/").length-1];
+				mVideoView.setUp(url,true,name);
 			}
 
 		}
@@ -224,47 +241,13 @@ public class PlayerActivity extends AppCompatActivity implements OnClickListener
 	}
 
 
-
 	@Override
 	public void onConfigurationChanged(Configuration newConfig) {
-		ResetVideoPlayer();
+        ResetVideoPlayer();
 		super.onConfigurationChanged(newConfig);
 	}
-	
-	private void ResetVideoPlayer(){
-		// 设置显示名称
-		mMediaController.initControllerTools(this, mContentView, mVideoView,this);
-		mMediaController.setMediaPlayer(mVideoView);
-		mMediaController.setFileName(mVideoRes.getVideoTitle());
-		
-		int mCurrentOrientation = getResources().getConfiguration().orientation;
-		if (mCurrentOrientation == Configuration.ORIENTATION_PORTRAIT) {
-			SetfullScreen(PlayerActivity.this, false);
-			mMediaController.isLockedTools = false;
-			
-			mTitleLayout.setVisibility(View.VISIBLE);
-			mTopTools.setVisibility(View.GONE);
-			mLockScreenSwitch.setVisibility(View.GONE);
-			mOrientationSwitch.setImageResource(R.mipmap.player_fill);
-			mRl_PlayView.setLayoutParams(new LayoutParams(LayoutParams.MATCH_PARENT, dp2px(PlayerActivity.this, 200)));
-			if (mVideoView != null && mIsPrepared){
-//				mVideoView.setVideoLayout(-1, 0);
-			}
-		} else if (mCurrentOrientation == Configuration.ORIENTATION_LANDSCAPE) {
-			SetfullScreen(PlayerActivity.this,true);
-			mTitleLayout.setVisibility(View.GONE);
-			mTopTools.setVisibility(View.VISIBLE);
-			mLockScreenSwitch.setVisibility(View.VISIBLE);
-			mOrientationSwitch.setImageResource(R.mipmap.player_btn_scale);
-			mRl_PlayView.setLayoutParams(new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT));
-			if (mVideoView != null && mIsPrepared){
-//				mVideoView.setVideoLayout(-1, 0);
-			}
-		}
-		mVideoView.requestFocus();
-	}
-	
-	
+
+
 	/**
 	 * 设置是否进入全屏
 	 * @param activity
@@ -353,41 +336,11 @@ public class PlayerActivity extends AppCompatActivity implements OnClickListener
 		}
 		super.onDestroy();
 	}
-	
-	/**
-	 * 停止播放
-	 */
-	private void stopPlayer() {
-		if (mVideoView != null && mVideoView.isPlaying()){
-			mVideoView.pause();
-		}
-	}
+
 
 	private boolean isFirstIn = true;
-	/**
-	 * 开始播放
-	 */
-	private void startPlayer() {
-		if (mVideoView != null && ! mVideoView.isPlaying()){
-			mVideoView.requestFocus();
-			mVideoView.start();
-			mMediaController.updatePausePlay();
-			if(isFirstIn){
-				mMediaController.mHandler.sendEmptyMessage(2);
-				mMediaController.mHandler.sendMessageDelayed(mMediaController.mHandler.obtainMessage(1), 3000);
-				isFirstIn = false;
-				isFirstPlay = false;
-			}
-		}
-	}
 
-	/**
-	 * 播放器是否正在播放
-	 * @return
-	 */
-	private boolean isPlaying() {
-		return mVideoView != null && mVideoView.isPlaying();
-	}
+
 	
 	/**
 	 * dp转px
@@ -436,37 +389,34 @@ public class PlayerActivity extends AppCompatActivity implements OnClickListener
 		dialog.getWindow().setAttributes(params);
 	}
 
+
 	@Override
-	public void onCompletion() {
-        mMediaController.updatePausePlay();
-        mPlayerSeekbar.setProgress(mPlayerSeekbar.getMax());
-        isPlayComplete = true;
-        mMediaController.mHandler.removeMessages(2);
-        mMediaController.getPlayerCenterPlaySwitch().setVisibility(View.VISIBLE);
+	public void onCompletion(IMediaPlayer iMediaPlayer) {
+		mMediaController.updatePausePlay();
+		mPlayerSeekbar.setProgress(mPlayerSeekbar.getMax());
+		isPlayComplete = true;
+		mMediaController.mHandler.removeMessages(2);
+		mMediaController.getPlayerCenterPlaySwitch().setVisibility(View.VISIBLE);
 	}
 
 	@Override
-	public boolean onError(Exception e) {
+	public void onPrepared(IMediaPlayer iMediaPlayer) {
+		mIsPrepared = true;
+	}
+
+	@Override
+	public boolean onError(IMediaPlayer iMediaPlayer, int i, int i1) {
 		mLoadingView.setVisibility(View.GONE);
 		return false;
 	}
 
 	@Override
-	public void onPrepared() {
-        mIsPrepared = true;
+	public void onSeekComplete(IMediaPlayer iMediaPlayer) {
+		mMediaController.mHandler.sendEmptyMessage(2);
 	}
 
-    @Override
-    public void onSeekComplete() {
-        mMediaController.mHandler.sendEmptyMessage(2);
-    }
-
-    @Override
-    public void onBufferingUpdate(int percent) {
-	    if (percent>98){
-            mLoadingView.setVisibility(View.INVISIBLE);
-        }else {
-            mLoadingView.setVisibility(View.VISIBLE);
-        }
-    }
+	@Override
+	public void onBufferingUpdate(IMediaPlayer iMediaPlayer, int i) {
+		mLoadingView.setVisibility(View.VISIBLE);
+	}
 }

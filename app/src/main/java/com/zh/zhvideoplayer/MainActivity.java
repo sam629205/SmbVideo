@@ -28,15 +28,16 @@ import android.widget.Toast;
 
 import com.handmark.pulltorefresh.library.PullToRefreshBase;
 import com.handmark.pulltorefresh.library.PullToRefreshGridView;
+import com.zh.zhvideoplayer.adapter.LocalVideoListAdapter;
 import com.zh.zhvideoplayer.bean.Resources;
 import com.zh.zhvideoplayer.model.VideoModel;
 import com.zh.zhvideoplayer.player.GetLocalVideosTask;
 import com.zh.zhvideoplayer.player.GetSmbVideosTask;
-import com.zh.zhvideoplayer.adapter.LocalVideoListAdapter;
 import com.zh.zhvideoplayer.player.PlayerActivity;
 import com.zh.zhvideoplayer.service.PlayFileService;
 import com.zh.zhvideoplayer.ui.title.TitleBuilder;
 import com.zh.zhvideoplayer.util.Constant;
+import com.zh.zhvideoplayer.util.FileUtil;
 import com.zh.zhvideoplayer.util.Preference;
 import com.zh.zhvideoplayer.util.ScreenUtils;
 import com.zh.zhvideoplayer.util.Utils;
@@ -62,6 +63,7 @@ public class MainActivity extends AppCompatActivity implements
     private List<String> videoPaths = new ArrayList<>();
     private int smbVideosInfoCount;
     private int noInfoVideosSize;
+    private int scrollPosition = 0;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -80,10 +82,15 @@ public class MainActivity extends AppCompatActivity implements
             intent.putExtra("videoType",0);
             startActivity(intent);
         }
-        initDatas();
         initListener();
         Intent intent = new Intent(this, PlayFileService.class);
         startService(intent);
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        initDatas();
     }
 
     private void initTitle() {
@@ -138,9 +145,10 @@ public class MainActivity extends AppCompatActivity implements
                }else {
                    ((TextView)mView.findViewById(R.id.title_left_textview)).setText("列表");
                    mGridView.setNumColumns(1);
+                   position = position*2;
                }
                 mListAdapter.notifyDataSetChanged();
-                mGridView.smoothScrollToPosition(position);
+                setListViewPos(position);
             }
         });
     }
@@ -154,22 +162,30 @@ public class MainActivity extends AppCompatActivity implements
                 if (Utils.isVideoType(item))
                 {
                     String mName = item.substring(item.lastIndexOf("/")+1,item.length());
-                    String mPath = Environment.getExternalStorageDirectory()+"/Download/"+info.getNumber()+"/"+mName;
+                    String mPath = "";
+                    if (isDownloadedToLocal(info.getNumber())){
+                        mPath = Environment.getExternalStorageDirectory()+"/Download/"+info.getNumber()+"/"+mName;
+                    }else {
+                        mPath = item;
+                    }
                     videoPaths.add(mPath);
                     names.add(mName);
                 }
             }
             if (names.size()>1){
                 if (isDownloadedToLocal(info.getNumber())){
-                    showVideoSelectDialog(names);
+                    showVideoSelectDialog(names,false);
                 }else {
-                    Toast.makeText(MainActivity.this,"请先下载到本地",Toast.LENGTH_SHORT).show();
+                    showVideoSelectDialog(names,true);
                 }
             }else {
                 if (isDownloadedToLocal(info.getNumber())){
                     showPlayers(videoPaths.get(0));
                 }else {
-                    Toast.makeText(MainActivity.this,"请先下载到本地",Toast.LENGTH_SHORT).show();
+                    String ipVal = FileUtil.ip;
+                    int portVal = FileUtil.port;
+                    String httpReq = "http://" + ipVal + ":" + portVal + "/smb="+videoPaths.get(0);
+                    showPlayers(httpReq);
                 }
             }
         } catch (Exception e){
@@ -207,14 +223,21 @@ public class MainActivity extends AppCompatActivity implements
         AlertDialog dialog = builder.create();
         dialog.show();
     }
-    private void showVideoSelectDialog(List<String> names){
+    private void showVideoSelectDialog(List<String> names, final boolean isSmb){
         AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
         builder.setTitle("选择视频");
         String[] nameStrs = names.toArray(new String[0]);
         builder.setItems(nameStrs, new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
-                showPlayers(videoPaths.get(which));
+                if (isSmb){
+                    String ipVal = FileUtil.ip;
+                    int portVal = FileUtil.port;
+                    String httpReq = "http://" + ipVal + ":" + portVal + "/smb="+videoPaths.get(which);
+                    showPlayers(httpReq);
+                }else {
+                    showPlayers(videoPaths.get(which));
+                }
             }
         });
         builder.setNegativeButton("取消", new DialogInterface.OnClickListener() {
@@ -349,8 +372,7 @@ public class MainActivity extends AppCompatActivity implements
             mVideoList.clear();
             mVideoList.addAll(videos);
             mListAdapter.reloadData(isRefreshInfo);
-        } else {
-
+            setListViewPos(scrollPosition);
         }
         ShowContent();
         // 我们可以 延迟 1秒左右，在调用onRefreshComplete 方法，可以解决该问题
@@ -378,6 +400,12 @@ public class MainActivity extends AppCompatActivity implements
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        scrollPosition = mGridView.getLastVisiblePosition();
     }
 
     private void ShowContent() {

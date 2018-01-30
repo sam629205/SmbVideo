@@ -14,7 +14,7 @@
             <!--android:layout_width="match_parent"-->
             <!--android:layout_height="match_parent"-->
             <!--android:layout_centerInParent="true" />-->
-        <com.devbrackets.android.exomedia.ui.widget.VideoView
+        <com.zh.zhvideoplayer.view.MyGSYPlayer
             android:id="@+id/vitamio_videoview"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
@@ -118,7 +118,7 @@
             android:layout_marginLeft="10dp"
             android:layout_marginTop="80dp"
             android:visibility="invisible"
-            android:src="@mipmap/forward_seek" />
+            android:src="@drawable/forward_seek" />
 
         <RelativeLayout
             android:id="@+id/player_bottom_layout"

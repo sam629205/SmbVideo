@@ -27,7 +27,8 @@ import android.widget.SeekBar;
 import android.widget.SeekBar.OnSeekBarChangeListener;
 import android.widget.TextView;
 
-import com.devbrackets.android.exomedia.ui.widget.VideoView;
+import com.shuyu.gsyvideoplayer.utils.OrientationUtils;
+import com.shuyu.gsyvideoplayer.video.StandardGSYVideoPlayer;
 import com.zh.zhvideoplayer.R;
 import com.zh.zhvideoplayer.util.Preference;
 import com.zh.zhvideoplayer.util.StringUtils;
@@ -42,7 +43,7 @@ import java.util.TimerTask;
  * @author zh
  */
 public class MyMediaController extends FrameLayout implements View.OnClickListener{
-	private VideoView mPlayer;//Vitmio的videoView 默认实现了MediaPlayerControl接口，所以要传递一个videoView对象过来
+	private StandardGSYVideoPlayer mPlayer;//Vitmio的videoView 默认实现了MediaPlayerControl接口，所以要传递一个videoView对象过来
 	private Activity mContext;
 	private View mContentView;//所在界面的布局
 	private ProgressBar mProgress;//视频播放器的播放进度条
@@ -91,6 +92,7 @@ public class MyMediaController extends FrameLayout implements View.OnClickListen
 	private Timer seekTimer = new Timer();
 	private static int seekInterval = 800;
 	private boolean isIntervalSeeking = false;
+	private OrientationUtils orientationUtils;
 	public interface SetVideoURLListener{
 		void setVideoURI();
 	}
@@ -107,9 +109,6 @@ public class MyMediaController extends FrameLayout implements View.OnClickListen
 			switch (msg.what) {
 			case FADE_OUT:
 				// 隐藏底部和顶部的控制视图
-//				if( !PreferencesUtils.getBoolean(mContext, AppConst.isNotWifiPalyMediaKey, false) && !NetUtils.isWifiConnected(mContext)){
-//					return;
-//				}
 				hiddenControllerTools(true);
 				break;
 			case SHOW_PROGRESS:
@@ -129,7 +128,10 @@ public class MyMediaController extends FrameLayout implements View.OnClickListen
 					mVolumeBrightnessLayout.setVisibility(View.GONE);
 					break;
 				case FORWARD_SEEK:
-					long forwardPosition = mPlayer.getCurrentPosition()+ Preference.getInt(PREFERENCE_FORWARD_INTERVAL,5000)*1000;
+				    if (mPlayer.getCurrentPositionWhenPlaying() ==0){
+				        break;
+                    }
+					long forwardPosition = mPlayer.getCurrentPositionWhenPlaying()+ Preference.getInt(PREFERENCE_FORWARD_INTERVAL,5000)*1000;
 					mPlayer.seekTo(forwardPosition);
 					float percent = (float)forwardPosition/(float) mPlayer.getDuration()*100;
 					int speed = ((PlayerActivity)mContext).getDLSpeed();
@@ -159,7 +161,7 @@ public class MyMediaController extends FrameLayout implements View.OnClickListen
         super(context, attrs, defStyle);
     }
 	
-	public void initControllerTools(Activity activity, View contentView, VideoView player, PlayerActivity playerActivity) {
+	public void initControllerTools(Activity activity, View contentView, StandardGSYVideoPlayer player, PlayerActivity playerActivity) {
 		this.mContext = activity;
 		this.mPlayer = player;
 		this.mPlayerActivity =  playerActivity;
@@ -167,6 +169,7 @@ public class MyMediaController extends FrameLayout implements View.OnClickListen
 		mMaxVolume = mAudioManager.getStreamMaxVolume(AudioManager.STREAM_MUSIC);
 		this.mContentView = contentView;
 		this.mGestureDetector = new GestureDetector(mContext,new MyGestureListener());
+		this.orientationUtils = new OrientationUtils(mContext,mPlayer);
 		this.seekTimer.schedule(new TimerTask() {
 			@Override
 			public void run() {
@@ -233,7 +236,6 @@ public class MyMediaController extends FrameLayout implements View.OnClickListen
 					mContext.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
 				}else{
 					mContext.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
-//					mContext.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE); //主动设置为横屏
 				}
 			}
 		});
@@ -294,7 +296,7 @@ public class MyMediaController extends FrameLayout implements View.OnClickListen
 		return mPlayerCenterPlaySwitch;
 	}
 
-	public void setMediaPlayer(VideoView player) {
+	public void setMediaPlayer(StandardGSYVideoPlayer player) {
 		this.mPlayer = player;
 		updatePausePlay();
 	}
@@ -421,14 +423,14 @@ public class MyMediaController extends FrameLayout implements View.OnClickListen
 		if (mPlayer == null || mDragging){
 			return 0;
 		}
-		long position = mPlayer.getCurrentPosition();
+		long position = mPlayer.getCurrentPositionWhenPlaying();
 		long duration = mPlayer.getDuration();
 		if (mProgress != null) {
 			if (duration > 0) {
 				long pos = 1000L * position / duration;
 				mProgress.setProgress((int) pos);
 			}
-			int percent = mPlayer.getBufferPercentage();
+			int percent = mPlayer.getBuffterPoint();
 			mProgress.setSecondaryProgress(percent * 10);
 		}
 
@@ -581,51 +583,39 @@ public class MyMediaController extends FrameLayout implements View.OnClickListen
 		if (mContentView == null || mPlayerPlaySwitch == null){
 			return;
 		}
-		if (mPlayer.isPlaying()){
-			mPlayerPlaySwitch.setImageResource(R.mipmap.player_mediacontroller_pause);
-//			mPlayerCenterPlaySwitch.setImageResource(R.drawable.player_center_switch_play);
-			mPlayerCenterPlaySwitch.setVisibility(View.GONE);
-		} else {
-			mPlayerPlaySwitch.setImageResource(R.mipmap.player_mediacontroller_play);
-			mPlayerCenterPlaySwitch.setImageResource(R.mipmap.player_center_switch_pause);
-//			mPlayerCenterPlaySwitch.setVisibility(VISIBLE);
-		}
+//		if (mPlayer.getCurrentPlayer().isPlaying){
+//			mPlayerPlaySwitch.setImageResource(R.mipmap.player_mediacontroller_pause);
+//			mPlayerCenterPlaySwitch.setVisibility(View.GONE);
+//		} else {
+//			mPlayerPlaySwitch.setImageResource(R.mipmap.player_mediacontroller_play);
+//			mPlayerCenterPlaySwitch.setImageResource(R.mipmap.player_center_switch_pause);
+//		}
 	}
 
 	public void doPauseResume() {
-//		if( mPlayerActivity.isPlayLocalVideo == false && !PreferencesUtils.getBoolean(mContext, AppConst.isNotWifiPalyMediaKey, false) && !NetUtils.isWifiConnected(mContext)){
-//			mPlayerActivity.ShowSetNetDialog();
-//			return;
-//		}
-//
-//		if( !PreferencesUtils.getBoolean(mContext, AppConst.isAutoPalyMediaKey, false) && mPlayerActivity.isFirstPlay){
-//			setVideoURLListener.setVideoURI();
-//			mPlayerActivity.isPlayPause = false;
-//			return;
-//		}
 		if(mPlayerActivity.isFirstPlay){
 			setVideoURLListener.setVideoURI();
 			mPlayerActivity.isPlayPause = false;
+			mPlayer.getFullscreenButton().performClick();
 			return;
 		}
-		
+
 		 if (mPlayerActivity.isPlayComplete) {
 			 mPlayer.seekTo(0);
 			 mPlayerActivity.isPlayComplete = false;
 	     } else {
-	    	 if (mPlayer.isPlaying()){
-	 			mPlayer.pause();
+	    	 if (mPlayer.isActivated()){
+	 			mPlayer.onVideoPause();
 	 			mPlayerActivity.isPlayPause = true;
-	 			//zh 
+	 			//zh
 	 			mHandler.removeMessages(SHOW_PROGRESS);
 	 			mPlayerCenterPlaySwitch.setImageResource(R.mipmap.player_center_switch_pause);
 	 			mPlayerCenterPlaySwitch.setVisibility(View.VISIBLE);
 	 		} else{
-	 			mPlayer.start();
+	 			mPlayer.startPlayLogic();
 	 			mPlayerActivity.isPlayPause = false;
-	 			//zh 
+	 			//zh
 	 			mHandler.sendEmptyMessage(SHOW_PROGRESS);
-//	 			mPlayerCenterPlaySwitch.setImageResource(R.drawable.player_center_switch_play);
 	 			mPlayerCenterPlaySwitch.setVisibility(View.GONE);
 	 		}
 	     }
@@ -716,12 +706,12 @@ public class MyMediaController extends FrameLayout implements View.OnClickListen
 			scale = 60000;
 		}
 				
-		if (mPlayer.getCurrentPosition() + scale * percent < 0){ 
+		if (mPlayer.getCurrentPositionWhenPlaying() + scale * percent < 0){
 			AfterFastBackProgress = 0;			
-		} else if(mPlayer.getCurrentPosition() + scale * percent > mPlayer.getDuration()) {
+		} else if(mPlayer.getCurrentPositionWhenPlaying() + scale * percent > mPlayer.getDuration()) {
 			AfterFastBackProgress = mPlayer.getDuration();			
 		} else {			
-			AfterFastBackProgress = mPlayer.getCurrentPosition() + (long)(scale * percent);
+			AfterFastBackProgress = mPlayer.getCurrentPositionWhenPlaying() + (long)(scale * percent);
 		}
 		mVolumeOrBrightnessProgress.setText(StringUtils.generateTime(AfterFastBackProgress) + "/" + StringUtils.generateTime(mPlayer.getDuration()));
 		if (percent > 0) {

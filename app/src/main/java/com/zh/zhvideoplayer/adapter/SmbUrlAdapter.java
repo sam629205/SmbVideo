@@ -63,6 +63,7 @@ public class SmbUrlAdapter extends BaseAdapter{
             holder.tvUrl = (TextView) convertView.findViewById(R.id.tv_url);
             holder.ivAccount = (ImageView) convertView.findViewById(R.id.iv_account);
             holder.ivDel = (ImageView) convertView.findViewById(R.id.iv_del);
+            holder.ivActive = convertView.findViewById(R.id.iv_active);
             convertView.setTag(holder);
         }else{
             holder = (ViewHolder)convertView.getTag();
@@ -72,6 +73,7 @@ public class SmbUrlAdapter extends BaseAdapter{
         }else {
             holder.ivAccount.setImageDrawable(Utils.getDrawable("account_blue"));
         }
+        holder.ivActive.setImageResource(info.getActive().equals("1")?R.drawable.active:R.drawable.inactive);
         holder.tvUrl.setText(info.getUrl());
         holder.ivAccount.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -94,6 +96,23 @@ public class SmbUrlAdapter extends BaseAdapter{
                 mRealm.commitTransaction();
             }
         });
+        holder.ivActive.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Realm mRealm=MyApplication.getInstance().getRealm();
+                SmbModel model = mRealm.where(SmbModel.class).equalTo("url",info.getUrl()).findFirst();
+                mRealm.beginTransaction();
+                if (model.getActive().equals("0")){
+                    info.setActive("1");
+                    model.setActive("1");
+                }else {
+                    info.setActive("0");
+                    model.setActive("0");
+                }
+                notifyDataSetChanged();
+                mRealm.commitTransaction();
+            }
+        });
         return convertView;
     }
     public void add(SmbModel info){
@@ -104,6 +123,7 @@ public class SmbUrlAdapter extends BaseAdapter{
         TextView tvUrl;
         ImageView ivAccount;
         ImageView ivDel;
+        ImageView ivActive;
     }
     private void showAccountDialog(final SmbModel info){
 

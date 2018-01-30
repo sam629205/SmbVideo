@@ -12,6 +12,15 @@ public class SmbModel extends RealmObject{
     private String url;
     private String account;
     private String pwd;
+    private String active;
+
+    public String getActive() {
+        return active;
+    }
+
+    public void setActive(String active) {
+        this.active = active;
+    }
 
     public String getUrl() {
         return url;

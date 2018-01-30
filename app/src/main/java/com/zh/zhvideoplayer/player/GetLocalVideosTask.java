@@ -4,6 +4,7 @@ import android.os.AsyncTask;
 import android.widget.Toast;
 
 import com.zh.zhvideoplayer.MyApplication;
+import com.zh.zhvideoplayer.model.SmbModel;
 import com.zh.zhvideoplayer.model.VideoModel;
 
 import java.net.MalformedURLException;
@@ -25,11 +26,27 @@ public class GetLocalVideosTask extends AsyncTask<Object,Integer,List<VideoModel
     @Override
     protected List<VideoModel> doInBackground(Object... params) {
         Realm mRealm=MyApplication.getInstance().getRealm();
-        final RealmResults<VideoModel> results = mRealm.where(VideoModel.class).findAll().sort("number");
+        RealmResults<VideoModel> results = mRealm.where(VideoModel.class).findAll().sort("number");
+        RealmResults<SmbModel> results2 = mRealm.where(SmbModel.class).equalTo("active","0").findAll();
+        List<SmbModel> smbPaths = mRealm.copyFromRealm(results2);
         List<VideoModel> infoList = mRealm.copyFromRealm(results);
+        for (int i=infoList.size()-1;i>=0;i--){
+            if (pathIsInactive(infoList.get(i).getPath(),smbPaths)){
+                infoList.remove(infoList.get(i));
+            }
+        }
         return infoList;
     }
-
+    private boolean pathIsInactive(String path,List<SmbModel> mPaths){
+        boolean result = false;
+        for (SmbModel item:mPaths){
+            if (path.contains(item.getUrl())){
+                result = true;
+                break;
+            }
+        }
+        return result;
+    }
     @Override
     protected void onPostExecute(List<VideoModel> videos) {
         super.onPostExecute(videos);

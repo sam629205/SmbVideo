@@ -8,7 +8,6 @@
       <module fileurl="file://$PROJECT_DIR$/app/app.iml" filepath="$PROJECT_DIR$/app/app.iml" />
       <module fileurl="file://$PROJECT_DIR$/jcvideoplayer-lib/jcvideoplayer-lib.iml" filepath="$PROJECT_DIR$/jcvideoplayer-lib/jcvideoplayer-lib.iml" />
       <module fileurl="file://$PROJECT_DIR$/pullToRefresh_library/pullToRefresh_library.iml" filepath="$PROJECT_DIR$/pullToRefresh_library/pullToRefresh_library.iml" />
-      <module fileurl="file://D:\javaWorkspace\ZhVideoPlayer-master\vitamio_lib\vitamio_lib.iml" filepath="D:\javaWorkspace\ZhVideoPlayer-master\vitamio_lib\vitamio_lib.iml" />
       <module fileurl="file://D:\javaWorkspace\SmbVideo\vitamio_lib\vitamio_lib.iml" filepath="D:\javaWorkspace\SmbVideo\vitamio_lib\vitamio_lib.iml" />
     </modules>
   </component>

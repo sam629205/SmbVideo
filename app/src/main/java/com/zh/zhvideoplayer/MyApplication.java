@@ -5,6 +5,8 @@ import android.app.Application;
 import com.avos.avoscloud.AVOSCloud;
 import com.nostra13.universalimageloader.core.ImageLoader;
 import com.nostra13.universalimageloader.core.ImageLoaderConfiguration;
+import com.shuyu.gsyvideoplayer.GSYVideoManager;
+import com.shuyu.gsyvideoplayer.utils.GSYVideoType;
 
 import io.realm.Realm;
 import io.realm.RealmConfiguration;
@@ -47,11 +49,12 @@ public class MyApplication extends Application {
 		ImageLoaderConfiguration config = new ImageLoaderConfiguration.Builder(getContext())
 				.build();
 		ImageLoader.getInstance().init(config);
+		GSYVideoManager.instance().setVideoType(this, GSYVideoType.IJKEXOPLAYER2); //系统播放器
 	}
 	private void initRealm(){
 		Realm.init(this);
 		realmConfig = new RealmConfiguration.Builder()
-				.name("flightAdmin.realm").schemaVersion(1).deleteRealmIfMigrationNeeded().build();
+				.name("flightAdmin.realm").schemaVersion(2).deleteRealmIfMigrationNeeded().build();
 	}
 	public Realm getRealm(){
 		return Realm.getInstance(realmConfig);

@@ -123,7 +123,7 @@ public class LocalVideoListAdapter extends BaseAdapter {
 		} else{
 			viewHolder = (ViewHolder) convertView.getTag();
 		}
-		if (MainActivity.isPicWall){
+        if (MainActivity.isPicWall){
 			viewHolder.image.setLayoutParams(new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.MATCH_PARENT,1000));
 			viewHolder.factory.setVisibility(View.GONE);
 			viewHolder.series.setVisibility(View.GONE);

@@ -1,7 +1,7 @@
 {
     "logs": [
         {
-            "outputFile": "D:\\javaWorkspace\\ZhVideoPlayer-master\\pullToRefresh_library\\build\\intermediates\\incremental\\mergeDebugAndroidTestResources\\merged.dir\\values-ka\\values-ka.xml",
+            "outputFile": "D:\\javaWorkspace\\SmbVideo\\SmbVideo\\pullToRefresh_library\\build\\intermediates\\incremental\\mergeDebugAndroidTestResources\\merged.dir\\values-ka\\values-ka.xml",
             "map": [
                 {
                     "source": "C:\\Users\\Adolf Li\\.gradle\\caches\\transforms-1\\files-1.1\\support-compat-27.0.2.aar\\94609a4a3ca4fd2104af42ab2324109e\\res\\values-ka\\values-ka.xml",

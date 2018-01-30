@@ -6,10 +6,10 @@ android {
     buildToolsVersion '26.0.2'
     defaultConfig {
         applicationId "com.zh.zhvideoplayer"
-        minSdkVersion 15
+        minSdkVersion 16
         targetSdkVersion 23
-        versionCode 3
-        versionName "0.2.1"
+        versionCode 4
+        versionName "0.2.2"
         multiDexEnabled true
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
     }
@@ -27,7 +27,7 @@ dependencies {
         exclude group: 'com.android.support', module: 'support-annotations'
     })
     compile 'com.liulishuo.filedownloader:library:1.6.9'
-    compile 'com.devbrackets.android:exomedia:4.1.0'
+    compile 'com.shuyu:GSYVideoPlayer:3.0.0'
     compile project(':pullToRefresh_library')
     testCompile 'junit:junit:4.12'
     compile files('libs/jcifs-1.3.17.jar')
@@ -37,4 +37,5 @@ dependencies {
     compile files('libs/okio-1.13.0.jar')
     compile files('libs/universal-image-loader-1.9.4.jar')
     compile files('libs/jsoup-1.8.3.jar')
+    implementation 'com.android.support:support-v4:27.0.2'
 }
