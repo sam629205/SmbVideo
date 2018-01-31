@@ -156,7 +156,8 @@ public class PlayerActivity extends AppCompatActivity implements OnClickListener
         mVideoView.requestFocus();
     }
 	private void loadDetailWeb(){
-		String videoLink = mVideoRes.getLink();
+        String urlStr = mVideoRes.getLink().replace("%2F","/");
+		String videoLink = urlStr;
 		String[] strs = videoLink.split("/");
 		String videoName = strs[strs.length-2];
 		if (videoName.indexOf("-")==-1){
@@ -174,11 +175,13 @@ public class PlayerActivity extends AppCompatActivity implements OnClickListener
 		mMediaController.getPlayerCenterPlaySwitch().setVisibility(View.GONE);
 	}
 	private void playVideo(){
-        if(mVideoRes.getLink().indexOf("smb")!=-1){
-            FileItem item = new FileItem("",mVideoRes.getLink(),true);
+	    String url = mVideoRes.getLink().replace("%2F","/");
+		String prefix = url.substring(0,6);
+        if(prefix.indexOf("smb")!=-1){
+            FileItem item = new FileItem("",url,true);
             playSmbVideo(item);
         }else {
-            String name = mVideoRes.getLink().split("/")[mVideoRes.getLink().split("/").length-1];
+            String name = url.split("/")[url.split("/").length-1];
             mVideoView.setUp(mVideoRes.getLink(),false,name);
         }
         mVideoView.startPlayLogic();

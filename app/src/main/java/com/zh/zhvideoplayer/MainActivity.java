@@ -77,7 +77,7 @@ public class MainActivity extends AppCompatActivity implements
             Intent intent = new Intent();
             intent.setClass(MainActivity.this,PlayerActivity.class);
             Resources r = new Resources();
-            r.setLink(uri.getPath());
+            r.setLink(uri.toString());
             intent.putExtra("video",r);
             intent.putExtra("videoType",0);
             startActivity(intent);
@@ -90,6 +90,9 @@ public class MainActivity extends AppCompatActivity implements
     @Override
     protected void onResume() {
         super.onResume();
+        if (isPicWall){
+            mGridView.setNumColumns(2);
+        }
         initDatas();
     }
 
